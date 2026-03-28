@@ -509,17 +509,19 @@
     preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function downloadPDF() {
-    const el    = document.getElementById('invoiceContent');
-      html2pdf().set({
-      margin:      [10,10,10,10],
-      filename:    invNo + '.pdf',
-      image:       { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(el).save();
-  }
+ function downloadPDF() {
+  const element = document.getElementById('invoiceContent');
 
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 10,
+      filename: 'Taxi-Invoice.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    })
+    .save();
+}
   function printInvoice() { window.print(); }
 
   function resetForm() {

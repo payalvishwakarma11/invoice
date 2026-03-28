@@ -241,7 +241,7 @@
     <div class="section-label">Vehicle & Date</div>
     <div class="form-grid">
       <div class="form-group"><label>Vehicle Number *</label><input type="text" id="vehicleNo" placeholder="MP09 AB 1234"/></div>
-      <div class="form-group"><label>Invoice Date</label><input type="date" id="invoiceDate" readonly/></div>
+      <div class="form-group"><label>Invoice Date</label><input type="date" id="invoiceDate"/></div>
     </div>
 
     <div class="live-total"><span>Grand Total</span><strong id="liveTotal">₹ 0.00</strong></div>
@@ -357,23 +357,39 @@
     document.getElementById('dispExtra').innerText = formatINR(extra);
     document.getElementById('dispGrand').innerText = formatINR(baseFare + toll + extra);
 
-    document.getElementById('invoicePreview').style.display = 'block';
+    document.getElementById('invoicePreview').classList.add('visible');
     window.scrollTo({top: document.getElementById('invoicePreview').offsetTop, behavior: 'smooth'});
   }
 
   function downloadPDF() {
-    const element = document.getElementById('invoiceContent');
-    const opt = {
-      margin:       10,
-      filename:     'India-City-Taxi-Invoice.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+  const element = document.getElementById('invoiceContent');
 
-    // New way to run:
-    html2pdf().set(opt).from(element).save();
+  if (!element || element.innerHTML.trim() === "") {
+    alert("Please generate invoice first!");
+    return;
   }
+
+  const opt = {
+    margin: 5,
+    filename: 'India-City-Taxi-Invoice.pdf',
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: {
+      scale: 3,
+      useCORS: true,
+      scrollY: 0
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait'
+    }
+  };
+
+  // Important delay to ensure rendering
+  setTimeout(() => {
+    html2pdf().set(opt).from(element).save();
+  }, 500);
+}
 
   function resetForm() {
     location.reload();

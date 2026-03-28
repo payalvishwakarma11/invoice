@@ -361,19 +361,43 @@
     window.scrollTo({top: document.getElementById('invoicePreview').offsetTop, behavior: 'smooth'});
   }
 
-  function downloadPDF() {
+function downloadPDF() {
     const element = document.getElementById('invoiceContent');
+    const btn = event.currentTarget;
+    
+    // UI Feedback
+    btn.innerText = "⌛ Processing...";
+    btn.disabled = true;
+
+    // Mobile fix: Scroll top par hona chahiye render ke waqt
+    window.scrollTo(0, 0);
+
     const opt = {
-      margin:       10,
+      margin:       [10, 5, 10, 5], // Top, Left, Bottom, Right
       filename:     'India-City-Taxi-Invoice.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
+      image:        { type: 'jpeg', quality: 0.95 },
+      html2canvas:  { 
+        scale: 1.5, // Mobile ke liye scale thoda kam rakha hai taaki memory crash na ho
+        useCORS: true,
+        letterRendering: true,
+        scrollY: 0,
+        windowWidth: 1000 // Fixed width for consistent rendering
+      },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // New way to run:
-    html2pdf().set(opt).from(element).save();
-  }
+    // Mobile Browsers ke liye delay zaroori hai
+    setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => {
+            btn.innerText = "⬇ Download PDF";
+            btn.disabled = false;
+        }).catch(err => {
+            console.error(err);
+            btn.innerText = "❌ Error";
+            btn.disabled = false;
+        });
+    }, 500); 
+}
 
   function resetForm() {
     location.reload();
